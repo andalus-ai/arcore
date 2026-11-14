@@ -103,7 +103,7 @@ cargo clippy --workspace --all-targets -- -D warnings
 
 Run only commands supported by the current workspace; add missing targets and CI incrementally. Android builds also require the Android SDK/NDK and the supported Rust Android target(s).
 
-See [DEVELOPMENT.md](docs/DEVELOPMENT.md) for contribution and validation guidance and [AGENTS.md](AGENTS.md) for coding-agent instructions.
+See [DEVELOPMENT.md](docs/DEVELOPMENT.md) for contribution guidance, [ANDROID_PROVIDER.md](docs/ANDROID_PROVIDER.md) for the Android adapter contract, [ANDROID_DEVICE_VALIDATION.md](docs/ANDROID_DEVICE_VALIDATION.md) for the physical-device test plan, and [AGENTS.md](AGENTS.md) for coding-agent instructions.
 
 ## Product integration
 
