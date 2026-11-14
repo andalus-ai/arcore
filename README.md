@@ -1,3 +1,7 @@
+## Android implementation
+
+See [ANDROID_IMPLEMENTATION_PLAN.md](docs/ANDROID_IMPLEMENTATION_PLAN.md) for the Kotlin provider implementation sequence, module layout, lifecycle/threading requirements, normalized API boundary, and test gates.
+
 # Jezaku Spatial Engine (JSE)
 
 **A neutral, reusable spatial-computing engine for mobile and other spatial applications.**
