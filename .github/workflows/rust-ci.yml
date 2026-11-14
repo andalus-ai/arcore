@@ -9,7 +9,6 @@ on:
       - "rust-toolchain"
       - "rust-toolchain.toml"
       - "crates/**"
-      - ".github/workflows/rust-ci.yml"
   pull_request:
     paths:
       - "Cargo.toml"
