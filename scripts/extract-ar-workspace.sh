@@ -39,6 +39,8 @@ if [[ -n "${SOURCE_COMMIT:-}" ]]; then
 fi
 SOURCE_HEAD="$(git rev-parse HEAD)"
 echo "Source snapshot: $SOURCE_HEAD"
+# Ensure HEAD is attached so filter-repo can rewrite a named branch predictably.
+git switch -c extraction-source
 
 echo "==> Filter source history to $SOURCE_PATH"
 git filter-repo --force --path "$SOURCE_PATH" --path-rename "$SOURCE_PATH:"
