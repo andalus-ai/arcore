@@ -142,7 +142,6 @@ internal class ArCoreProviderSession(private val nativeSession: Session) : Provi
         }
 
         return try {
-            nativeHits.clear()
             frame.hitTest(xPixels, yPixels).mapNotNull { nativeHit ->
                 val plane = nativeHit.trackable as? Plane
                 if (plane != null && !plane.isPoseInPolygon(nativeHit.hitPose)) return@mapNotNull null
