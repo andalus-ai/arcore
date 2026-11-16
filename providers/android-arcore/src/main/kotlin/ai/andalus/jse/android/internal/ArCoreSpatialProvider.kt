@@ -11,6 +11,8 @@ import ai.andalus.jse.android.model.*
 import com.google.ar.core.ArCoreApk
 import com.google.ar.core.Config
 import com.google.ar.core.Session
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 /** Concrete ARCore provider. Create/use sessions on one dedicated host-owned thread. */
 class ArCoreSpatialProvider(context: Context, private val adapterVersion: String) : SpatialProvider {
@@ -21,7 +23,11 @@ class ArCoreSpatialProvider(context: Context, private val adapterVersion: String
         if (!cameraPermissionGranted) return ArCoreAvailabilityMapper.map(
             ArCoreApk.Availability.UNKNOWN_CHECKING, false)
         return try {
-            ArCoreAvailabilityMapper.map(ArCoreApk.getInstance().checkAvailability(appContext), true)
+            suspendCoroutine { continuation ->
+                ArCoreApk.getInstance().checkAvailabilityAsync(appContext) { availability ->
+                    continuation.resume(ArCoreAvailabilityMapper.map(availability, true))
+                }
+            }
         } catch (_: RuntimeException) {
             AvailabilityResult(AvailabilityStatus.ERROR, "ARCore availability check failed.", true)
         }
