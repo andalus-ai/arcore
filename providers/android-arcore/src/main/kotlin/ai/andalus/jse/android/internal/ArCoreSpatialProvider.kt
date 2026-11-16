@@ -1,9 +1,11 @@
 package ai.andalus.jse.android.internal
 
+import android.app.Activity
 import android.content.Context
 import ai.andalus.jse.android.ProviderErrorCode
 import ai.andalus.jse.android.ProviderException
 import ai.andalus.jse.android.ProviderSession
+import ai.andalus.jse.android.RuntimeInstallResult
 import ai.andalus.jse.android.SpatialProvider
 import ai.andalus.jse.android.model.*
 import com.google.ar.core.ArCoreApk
@@ -25,6 +27,21 @@ class ArCoreSpatialProvider(context: Context, private val adapterVersion: String
         }
     }
 
+    /**
+     * Starts the official, user-mediated AR runtime installation/update flow.
+     * Call only from a foreground Activity after availability reports install-required.
+     */
+    fun requestRuntimeInstall(activity: Activity, userRequestedInstall: Boolean): RuntimeInstallResult {
+        return try {
+            when (ArCoreApk.getInstance().requestInstall(activity, userRequestedInstall)) {
+                ArCoreApk.InstallStatus.INSTALLED -> RuntimeInstallResult.INSTALLED
+                ArCoreApk.InstallStatus.INSTALL_REQUESTED -> RuntimeInstallResult.INSTALL_FLOW_STARTED
+            }
+        } catch (error: Exception) {
+            throw ArCoreErrorMapper.map(error)
+        }
+    }
+
     override fun capabilities(): CapabilityReport = CapabilityReport(
         info.id,
         listOf("camera_tracking", "plane_detection_horizontal", "plane_detection_vertical",
@@ -40,7 +57,7 @@ class ArCoreSpatialProvider(context: Context, private val adapterVersion: String
             "The host application must grant camera permission before creating an AR session.", true)
         val session = try {
             Session(appContext)
-        } catch (error: Throwable) {
+        } catch (error: Exception) {
             throw ArCoreErrorMapper.map(error)
         }
         try {
@@ -55,7 +72,7 @@ class ArCoreSpatialProvider(context: Context, private val adapterVersion: String
             }
             session.configure(nativeConfig)
             return ArCoreProviderSession(session)
-        } catch (error: Throwable) {
+        } catch (error: Exception) {
             session.close()
             throw ArCoreErrorMapper.map(error)
         }
