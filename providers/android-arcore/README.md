@@ -18,7 +18,7 @@ Implemented:
 - Opaque, one-frame hit tokens and anchor creation directly from hit results.
 
 Not implemented yet:
-- Capability confirmation from actual device/runtime configuration (currently reported as UNKNOWN).
+- Depth sensing, instant placement, augmented images, cloud anchors, and geospatial capabilities.
 - Full coordinate-convention golden tests and quaternion normalization policy.
 - Host Activity lifecycle and CAMERA permission UX integration.
 - Renderer, Flutter/JNI bridge, Rust integration, or cloud persistence.
@@ -66,8 +66,8 @@ The provider does not request runtime permission itself. The host remains respon
 
 Only normalized JSE types belong in the public Kotlin API. ARCore SDK types remain implementation details. Distances and translations are meters. The frame timestamp is provider-monotonic, not Unix time. Pose frame labels currently use `camera`, `plane`, or `anchor` as source and `arcore-world` as target; verify conversion against portable Rust conventions before cross-language integration.
 
-Plane polygons are local plane X/Z coordinates in meters. Hit-test coordinates must match the physical-pixel dimensions passed to display geometry. Plane observations are snapshots and should be replaced by ID, not accumulated. All session calls are thread-affine and must be serialized on the session-creation thread.
+Plane polygons are local plane X/Z coordinates in meters. Hit-test coordinates must match the physical-pixel dimensions passed to display geometry. Plane observations are snapshots and should be replaced by ID, not accumulated. All session calls are thread-affine and must be serialized on the session-creation thread. Capability reporting is UNKNOWN until a session configures successfully, then reflects the plane modes enabled in the most recently configured session.
 
-See [Android plane observations and hit testing](../../docs/ANDROID_PLANE_HIT_TESTING.md) for data semantics, hit-token lifetime, rendering guidance, and device validation cases.
+See [Android plane observations and hit testing](../../docs/ANDROID_PLANE_HIT_TESTING.md) for data semantics, hit-token lifetime, rendering guidance, and device validation cases. See [Android capability reporting](../../docs/ANDROID_CAPABILITIES.md) for capability status semantics and host gating.
 
 The local provider does not require network access. Camera frames and spatial observations remain on-device unless a host application explicitly implements a separate consented data flow.
