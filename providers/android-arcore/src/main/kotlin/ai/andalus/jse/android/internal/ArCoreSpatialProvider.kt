@@ -18,6 +18,7 @@ import kotlin.coroutines.suspendCoroutine
 class ArCoreSpatialProvider(context: Context, private val adapterVersion: String) : SpatialProvider {
     private val appContext = context.applicationContext
     override val info = ProviderInfo("android.arcore", adapterVersion)
+    @Volatile private var capabilityReport = CapabilityDetector.unknown(info.id)
 
     override suspend fun checkAvailability(cameraPermissionGranted: Boolean): AvailabilityResult {
         if (!cameraPermissionGranted) return ArCoreAvailabilityMapper.map(
@@ -48,14 +49,11 @@ class ArCoreSpatialProvider(context: Context, private val adapterVersion: String
         }
     }
 
-    override fun capabilities(): CapabilityReport = CapabilityReport(
-        info.id,
-        listOf("camera_tracking", "plane_detection_horizontal", "plane_detection_vertical",
-            "hit_test", "anchors_local").map {
-            Capability(it, CapabilityStatus.UNKNOWN,
-                "Capability is not confirmed until runtime configuration and device validation.")
-        },
-    )
+    /**
+     * UNKNOWN until a session has been successfully configured. Afterwards this is the
+     * capability snapshot for the most recently configured session.
+     */
+    override fun capabilities(): CapabilityReport = capabilityReport
 
     override fun createSession(config: SessionConfig, cameraPermissionGranted: Boolean): ProviderSession {
         if (!cameraPermissionGranted) throw ProviderException(
@@ -77,6 +75,7 @@ class ArCoreSpatialProvider(context: Context, private val adapterVersion: String
                 }
             }
             session.configure(nativeConfig)
+            capabilityReport = CapabilityDetector.configured(info.id, config)
             return ArCoreProviderSession(session)
         } catch (error: Exception) {
             session.close()
